@@ -10,38 +10,55 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #0a0e14; color: #e6edf3;
-         min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-         padding: 24px; text-align: center; }
-  .logo { width: 96px; height: 96px; border-radius: 24px; background: linear-gradient(135deg,#ff5a5f,#b7343a);
-          display: grid; place-items: center; font-size: 46px; font-weight: 800; color: #fff; margin-bottom: 20px;
-          box-shadow: 0 0 50px rgba(255,90,95,.35); }
-  h1 { font-size: 1.5rem; margin-bottom: 8px; }
-  p { color: #8b98a9; margin-bottom: 24px; max-width: 340px; line-height: 1.5; }
-  button { background: #ff5a5f; color: #fff; border: 0; border-radius: 12px; padding: 16px 28px;
-           font-size: 1.05rem; font-weight: 600; cursor: pointer; width: 100%; max-width: 320px; }
+         min-height: 100vh; padding: 20px 16px 40px; }
+  .wrap { max-width: 440px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 20px; }
+  .logo { width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg,#ff5a5f,#b7343a);
+          display: grid; place-items: center; font-size: 30px; font-weight: 800; color: #fff; margin: 0 auto 12px;
+          box-shadow: 0 0 40px rgba(255,90,95,.3); }
+  h1 { font-size: 1.3rem; margin-bottom: 4px; }
+  .sub { color: #8b98a9; font-size: .85rem; }
+  button { background: #ff5a5f; color: #fff; border: 0; border-radius: 12px; padding: 13px 20px;
+           font-size: .98rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 14px; }
+  button.ghost { background: #151c28; border: 1px solid #1f2a3a; color: #e6edf3; }
   button:disabled { opacity: .5; }
-  .status { margin-top: 20px; font-size: .9rem; padding: 12px 18px; border-radius: 10px; background: #151c28;
-            border: 1px solid #1f2a3a; max-width: 320px; min-height: 20px; }
-  .ok { color: #3fb950; }
-  .err { color: #ff5a5f; }
+  .status { margin-top: 12px; font-size: .85rem; padding: 10px 14px; border-radius: 10px; background: #151c28;
+            border: 1px solid #1f2a3a; text-align: center; }
+  .ok { color: #3fb950; } .err { color: #ff5a5f; }
+  h2 { font-size: .95rem; color: #8b98a9; margin: 26px 0 12px; text-transform: uppercase; letter-spacing: .05em; }
+  .card { background: #151c28; border: 1px solid #1f2a3a; border-radius: 14px; padding: 15px 16px; margin-bottom: 10px; }
+  .card .t { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
+  .card .b { color: #c9d3de; font-size: .95rem; line-height: 1.5; white-space: pre-wrap; }
+  .card .when { color: #6b7684; font-size: .78rem; margin-top: 8px; }
+  .empty { color: #6b7684; text-align: center; padding: 30px 10px; font-size: .9rem; }
 </style>
 </head>
 <body>
-  <div class="logo">緋</div>
-  <h1>Recordatorios de Kenshin</h1>
-  <p>Activá las notificaciones para recibir tus recordatorios, turnos y avisos directo en el celular.</p>
+<div class="wrap">
+  <header>
+    <div class="logo">K</div>
+    <h1>Recordatorios de Kenshin</h1>
+    <div class="sub" id="who"></div>
+  </header>
+
   <button id="btn">Activar notificaciones</button>
-  <div class="status" id="status"></div>
+  <div class="status" id="status" style="display:none"></div>
+
+  <h2>Tus recordatorios</h2>
+  <div id="list"><div class="empty">Cargando…</div></div>
+  <button class="ghost" id="refresh">↻ Actualizar</button>
+</div>
 
 <script>
-// CONFIG: se completa en el deploy
 const BACKEND = "https://masters-classic-bibliographic-cart.trycloudflare.com";
 const USER = (new URLSearchParams(location.search).get("u") || "edu").toLowerCase();
+document.getElementById("who").textContent = "Perfil: " + USER;
 
 const statusEl = document.getElementById("status");
 const btn = document.getElementById("btn");
+const listEl = document.getElementById("list");
 
-function setStatus(msg, cls="") { statusEl.textContent = msg; statusEl.className = "status " + cls; }
+function setStatus(msg, cls="") { statusEl.style.display="block"; statusEl.textContent = msg; statusEl.className = "status " + cls; }
 
 function urlB64ToUint8(base64) {
   const pad = "=".repeat((4 - base64.length % 4) % 4);
@@ -50,46 +67,61 @@ function urlB64ToUint8(base64) {
   return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
 
+function fmt(ts) {
+  const d = new Date(ts*1000);
+  return d.toLocaleString("es-AR", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+}
+
+async function loadHistory() {
+  try {
+    const r = await fetch(BACKEND + "/history?user=" + encodeURIComponent(USER));
+    const { items } = await r.json();
+    if (!items || !items.length) {
+      listEl.innerHTML = '<div class="empty">Todavía no hay recordatorios.<br>Cuando Kenshin te mande uno, va a aparecer acá.</div>';
+      return;
+    }
+    listEl.innerHTML = items.map(it => `
+      <div class="card">
+        <div class="t">${esc(it.title)}</div>
+        <div class="b">${esc(it.body)}</div>
+        <div class="when">${fmt(it.ts)}</div>
+      </div>`).join("");
+  } catch (e) {
+    listEl.innerHTML = '<div class="empty">No se pudo cargar. Tocá Actualizar.</div>';
+  }
+}
+function esc(s){ return (s||"").replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+
 async function registerAndSubscribe() {
   try {
     btn.disabled = true;
     setStatus("Registrando…");
     const reg = await navigator.serviceWorker.register("sw.js");
     await navigator.serviceWorker.ready;
-
     const perm = await Notification.requestPermission();
-    if (perm !== "granted") { setStatus("Permiso denegado. Activalo en los ajustes del navegador.", "err"); btn.disabled=false; return; }
-
-    const res = await fetch(BACKEND + "/vapid-public");
-    const { key } = await res.json();
-
-    const sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlB64ToUint8(key),
-    });
-
+    if (perm !== "granted") { setStatus("Permiso denegado. Activalo en los ajustes.", "err"); btn.disabled=false; return; }
+    const { key } = await (await fetch(BACKEND + "/vapid-public")).json();
+    const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8(key) });
     await fetch(BACKEND + "/subscribe", {
       method: "POST", headers: {"Content-Type":"application/json"},
       body: JSON.stringify({ subscription: sub, user: USER }),
     });
-
-    setStatus("✓ Notificaciones activadas para " + USER + ". Ya podés cerrar la app.", "ok");
+    setStatus("✓ Notificaciones activadas para " + USER + ".", "ok");
     btn.textContent = "Activado ✓";
-  } catch (e) {
-    setStatus("Error: " + e.message, "err");
-    btn.disabled = false;
-  }
+  } catch (e) { setStatus("Error: " + e.message, "err"); btn.disabled = false; }
 }
 
 btn.addEventListener("click", registerAndSubscribe);
+document.getElementById("refresh").addEventListener("click", loadHistory);
 
-// Si ya está suscripto, avisar
 navigator.serviceWorker?.getRegistration().then(async reg => {
-  if (reg) {
-    const s = await reg.pushManager.getSubscription();
-    if (s) { setStatus("✓ Ya estás recibiendo notificaciones.", "ok"); btn.textContent = "Activado ✓"; }
-  }
+  if (reg) { const s = await reg.pushManager.getSubscription();
+    if (s) { setStatus("✓ Recibiendo notificaciones.", "ok"); btn.textContent = "Activado ✓"; } }
 });
+
+// Al abrir la app, cargar el historial. Y refrescar cuando vuelve a primer plano.
+loadHistory();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) loadHistory(); });
 </script>
 </body>
 </html>
