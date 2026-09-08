@@ -36,6 +36,7 @@
 <script>
 // CONFIG: se completa en el deploy
 const BACKEND = "https://masters-classic-bibliographic-cart.trycloudflare.com";
+const USER = (new URLSearchParams(location.search).get("u") || "edu").toLowerCase();
 
 const statusEl = document.getElementById("status");
 const btn = document.getElementById("btn");
@@ -69,10 +70,10 @@ async function registerAndSubscribe() {
 
     await fetch(BACKEND + "/subscribe", {
       method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(sub),
+      body: JSON.stringify({ subscription: sub, user: USER }),
     });
 
-    setStatus("✓ Notificaciones activadas. Ya podés cerrar la app.", "ok");
+    setStatus("✓ Notificaciones activadas para " + USER + ". Ya podés cerrar la app.", "ok");
     btn.textContent = "Activado ✓";
   } catch (e) {
     setStatus("Error: " + e.message, "err");
