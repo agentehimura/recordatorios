@@ -161,7 +161,7 @@ async function loadLists(){
     }
     listsEl.innerHTML = lists.map(L => `
       <div class="lst" data-slug="${esc(L.slug)}">
-        <h3>${esc(L.name)} <span class="cnt">${L.pending.length} pendiente${L.pending.length===1?"":"s"}</span></h3>
+        <h3>${esc(L.name)} <span class="cnt">${L.shared ? "👥 " : ""}${L.pending.length} pendiente${L.pending.length===1?"":"s"}</span></h3>
         ${L.pending.map(i=>`<div class="it" data-id="${i.id}"><div class="chk">✓</div><div class="tx">${esc(i.text)}</div></div>`).join("")
           || '<div class="empty" style="padding:14px">Todo listo ✓</div>'}
         ${L.done.length ? `<div class="donehdr">Comprado</div>` + L.done.map(i=>
