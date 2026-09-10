@@ -3,51 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kenshin · Recordatorios</title>
+<title>Kenshin</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#b7343a">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #0a0e14; color: #e6edf3;
-         min-height: 100vh; padding: 20px 16px 40px; }
-  .wrap { max-width: 440px; margin: 0 auto; }
-  header { text-align: center; margin-bottom: 20px; }
-  .logo { width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg,#ff5a5f,#b7343a);
-          display: grid; place-items: center; font-size: 30px; font-weight: 800; color: #fff; margin: 0 auto 12px;
+         min-height: 100vh; padding: 18px 16px 90px; }
+  .wrap { max-width: 460px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 16px; }
+  .logo { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg,#ff5a5f,#b7343a);
+          display: grid; place-items: center; font-size: 26px; font-weight: 800; color: #fff; margin: 0 auto 10px;
           box-shadow: 0 0 40px rgba(255,90,95,.3); }
-  h1 { font-size: 1.3rem; margin-bottom: 4px; }
-  .sub { color: #8b98a9; font-size: .85rem; }
-  button { background: #ff5a5f; color: #fff; border: 0; border-radius: 12px; padding: 13px 20px;
-           font-size: .98rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 14px; }
-  button.ghost { background: #151c28; border: 1px solid #1f2a3a; color: #e6edf3; }
-  button:disabled { opacity: .5; }
-  .status { margin-top: 12px; font-size: .85rem; padding: 10px 14px; border-radius: 10px; background: #151c28;
+  h1 { font-size: 1.15rem; }
+  .sub { color: #8b98a9; font-size: .82rem; margin-top: 2px; }
+
+  .tabs { display: flex; gap: 6px; background: #10161f; padding: 5px; border-radius: 14px; margin-bottom: 18px; }
+  .tab { flex: 1; text-align: center; padding: 11px 8px; border-radius: 10px; font-size: .92rem;
+         font-weight: 600; color: #8b98a9; cursor: pointer; border: 0; background: transparent; }
+  .tab.on { background: #ff5a5f; color: #fff; }
+
+  button { font-family: inherit; }
+  .btn { background: #ff5a5f; color: #fff; border: 0; border-radius: 12px; padding: 13px 20px;
+         font-size: .95rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 12px; }
+  .btn.ghost { background: #151c28; border: 1px solid #1f2a3a; color: #e6edf3; }
+  .btn:disabled { opacity: .5; }
+  .status { margin-top: 10px; font-size: .82rem; padding: 10px 14px; border-radius: 10px; background: #151c28;
             border: 1px solid #1f2a3a; text-align: center; }
   .ok { color: #3fb950; } .err { color: #ff5a5f; }
-  h2 { font-size: .95rem; color: #8b98a9; margin: 26px 0 12px; text-transform: uppercase; letter-spacing: .05em; }
-  .card { background: #151c28; border: 1px solid #1f2a3a; border-radius: 14px; padding: 15px 16px; margin-bottom: 10px; }
-  .card .t { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
-  .card .b { color: #c9d3de; font-size: .95rem; line-height: 1.5; white-space: pre-wrap; }
-  .card .when { color: #6b7684; font-size: .78rem; margin-top: 8px; }
-  .empty { color: #6b7684; text-align: center; padding: 30px 10px; font-size: .9rem; }
+
+  h2 { font-size: .78rem; color: #8b98a9; margin: 22px 0 10px; text-transform: uppercase; letter-spacing: .06em; }
+  .card { background: #151c28; border: 1px solid #1f2a3a; border-radius: 14px; padding: 14px 15px; margin-bottom: 9px; }
+  .card .t { font-weight: 700; font-size: .98rem; margin-bottom: 4px; }
+  .card .b { color: #c9d3de; font-size: .93rem; line-height: 1.5; white-space: pre-wrap; }
+  .card .when { color: #6b7684; font-size: .75rem; margin-top: 7px; }
+  .empty { color: #6b7684; text-align: center; padding: 34px 12px; font-size: .88rem; line-height: 1.6; }
+
+  /* listas */
+  .lst { background: #151c28; border: 1px solid #1f2a3a; border-radius: 16px; padding: 14px 15px; margin-bottom: 12px; }
+  .lst h3 { font-size: 1rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cnt { font-size: .75rem; color: #8b98a9; font-weight: 500; background: #0d131c; padding: 3px 9px; border-radius: 20px; }
+  .it { display: flex; align-items: flex-start; gap: 11px; padding: 9px 2px; border-top: 1px solid #1b2431; }
+  .it:first-of-type { border-top: 0; }
+  .chk { width: 21px; height: 21px; border-radius: 6px; border: 2px solid #3d4a5c; flex: 0 0 auto;
+         cursor: pointer; display: grid; place-items: center; font-size: 13px; color: transparent; margin-top: 1px; }
+  .it.done .chk { background: #3fb950; border-color: #3fb950; color: #fff; }
+  .it .tx { font-size: .95rem; line-height: 1.4; }
+  .it.done .tx { text-decoration: line-through; color: #5d6875; }
+  .addrow { display: flex; gap: 8px; margin-top: 12px; }
+  .addrow input { flex: 1; background: #0d131c; border: 1px solid #1f2a3a; color: #e6edf3;
+                  border-radius: 10px; padding: 11px 13px; font-size: .92rem; font-family: inherit; }
+  .addrow input::placeholder { color: #55606f; }
+  .addrow button { background: #1f2a3a; color: #e6edf3; border: 0; border-radius: 10px; padding: 0 17px;
+                   font-size: 1.3rem; cursor: pointer; }
+  .donehdr { font-size: .74rem; color: #6b7684; margin-top: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  .refresh { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px);
+             max-width: 460px; background: #151c28; border: 1px solid #1f2a3a; color: #8b98a9;
+             border-radius: 12px; padding: 12px; font-size: .88rem; cursor: pointer; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo">K</div>
-    <h1>Recordatorios de Kenshin</h1>
+    <h1>Kenshin</h1>
     <div class="sub" id="who"></div>
   </header>
 
-  <button id="btn">Activar notificaciones</button>
-  <div class="status" id="status" style="display:none"></div>
+  <div class="tabs">
+    <button class="tab on" data-v="notif">🔔 Notificaciones</button>
+    <button class="tab" data-v="listas">📋 Listas</button>
+  </div>
 
-  <h2>Tus recordatorios</h2>
-  <div id="list"><div class="empty">Cargando…</div></div>
-  <button class="ghost" id="refresh">↻ Actualizar</button>
+  <!-- ===== NOTIFICACIONES ===== -->
+  <section id="v-notif">
+    <button class="btn" id="btn">Activar notificaciones</button>
+    <div class="status" id="status" style="display:none"></div>
+    <h2>Historial</h2>
+    <div id="list"><div class="empty">Cargando…</div></div>
+  </section>
+
+  <!-- ===== LISTAS ===== -->
+  <section id="v-listas" style="display:none">
+    <div id="lists"><div class="empty">Cargando…</div></div>
+    <div class="addrow" style="margin-top:16px">
+      <input id="newlist" placeholder="Nueva lista (ej: Ferretería)">
+      <button id="addlist">+</button>
+    </div>
+  </section>
 </div>
+<button class="refresh" id="refresh">↻ Actualizar</button>
 
 <script>
 const BACKEND = "https://masters-classic-bibliographic-cart.trycloudflare.com";
@@ -57,71 +103,116 @@ document.getElementById("who").textContent = "Perfil: " + USER;
 const statusEl = document.getElementById("status");
 const btn = document.getElementById("btn");
 const listEl = document.getElementById("list");
+const listsEl = document.getElementById("lists");
+let view = "notif";
 
-function setStatus(msg, cls="") { statusEl.style.display="block"; statusEl.textContent = msg; statusEl.className = "status " + cls; }
+function esc(s){ return (s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function setStatus(msg, cls=""){ statusEl.style.display="block"; statusEl.textContent=msg; statusEl.className="status "+cls; }
+function fmt(ts){ return new Date(ts*1000).toLocaleString("es-AR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}); }
+function urlB64ToUint8(b){ const p="=".repeat((4-b.length%4)%4); const s=(b+p).replace(/-/g,"+").replace(/_/g,"/");
+  return Uint8Array.from([...atob(s)].map(c=>c.charCodeAt(0))); }
+const api = (path, body) => fetch(BACKEND+path, {method:"POST",headers:{"Content-Type":"application/json"},
+  body: JSON.stringify({user: USER, ...body})}).then(r=>r.json());
 
-function urlB64ToUint8(base64) {
-  const pad = "=".repeat((4 - base64.length % 4) % 4);
-  const b64 = (base64 + pad).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = atob(b64);
-  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-}
+/* ---- tabs ---- */
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+  t.classList.add("on");
+  view = t.dataset.v;
+  document.getElementById("v-notif").style.display  = view==="notif" ? "" : "none";
+  document.getElementById("v-listas").style.display = view==="listas" ? "" : "none";
+  refresh();
+}));
 
-function fmt(ts) {
-  const d = new Date(ts*1000);
-  return d.toLocaleString("es-AR", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
-}
-
-async function loadHistory() {
+/* ---- notificaciones ---- */
+async function loadHistory(){
   try {
-    const r = await fetch(BACKEND + "/history?user=" + encodeURIComponent(USER));
-    const { items } = await r.json();
-    if (!items || !items.length) {
-      listEl.innerHTML = '<div class="empty">Todavía no hay recordatorios.<br>Cuando Kenshin te mande uno, va a aparecer acá.</div>';
-      return;
+    const { items } = await (await fetch(BACKEND+"/history?user="+encodeURIComponent(USER))).json();
+    if (!items || !items.length){
+      listEl.innerHTML = '<div class="empty">Todavía no hay nada.<br>Cuando Kenshin te avise algo, aparece acá.</div>'; return;
     }
-    listEl.innerHTML = items.map(it => `
-      <div class="card">
+    listEl.innerHTML = items.map(it => `<div class="card">
         <div class="t">${esc(it.title)}</div>
         <div class="b">${esc(it.body)}</div>
-        <div class="when">${fmt(it.ts)}</div>
-      </div>`).join("");
-  } catch (e) {
-    listEl.innerHTML = '<div class="empty">No se pudo cargar. Tocá Actualizar.</div>';
-  }
+        <div class="when">${fmt(it.ts)}</div></div>`).join("");
+  } catch(e){ listEl.innerHTML = '<div class="empty">No se pudo cargar. Tocá Actualizar.</div>'; }
 }
-function esc(s){ return (s||"").replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
 
-async function registerAndSubscribe() {
+async function registerAndSubscribe(){
   try {
-    btn.disabled = true;
-    setStatus("Registrando…");
+    btn.disabled = true; setStatus("Registrando…");
     const reg = await navigator.serviceWorker.register("sw.js");
     await navigator.serviceWorker.ready;
-    const perm = await Notification.requestPermission();
-    if (perm !== "granted") { setStatus("Permiso denegado. Activalo en los ajustes.", "err"); btn.disabled=false; return; }
-    const { key } = await (await fetch(BACKEND + "/vapid-public")).json();
-    const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8(key) });
-    await fetch(BACKEND + "/subscribe", {
-      method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ subscription: sub, user: USER }),
-    });
-    setStatus("✓ Notificaciones activadas para " + USER + ".", "ok");
-    btn.textContent = "Activado ✓";
-  } catch (e) { setStatus("Error: " + e.message, "err"); btn.disabled = false; }
+    if (await Notification.requestPermission() !== "granted"){
+      setStatus("Permiso denegado. Activalo en los ajustes.","err"); btn.disabled=false; return; }
+    const { key } = await (await fetch(BACKEND+"/vapid-public")).json();
+    const sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToUint8(key)});
+    await api("/subscribe", {subscription: sub});
+    setStatus("✓ Notificaciones activadas para "+USER+".","ok"); btn.textContent="Activado ✓";
+  } catch(e){ setStatus("Error: "+e.message,"err"); btn.disabled=false; }
 }
 
-btn.addEventListener("click", registerAndSubscribe);
-document.getElementById("refresh").addEventListener("click", loadHistory);
+/* ---- listas ---- */
+async function loadLists(){
+  try {
+    const { lists } = await (await fetch(BACKEND+"/lists?user="+encodeURIComponent(USER))).json();
+    if (!lists || !lists.length){
+      listsEl.innerHTML = '<div class="empty">Sin listas todavía.<br>Pedile a Kenshin "anotá leche en la lista de compras",<br>o creá una acá abajo.</div>'; return;
+    }
+    listsEl.innerHTML = lists.map(L => `
+      <div class="lst" data-slug="${esc(L.slug)}">
+        <h3>${esc(L.name)} <span class="cnt">${L.pending.length} pendiente${L.pending.length===1?"":"s"}</span></h3>
+        ${L.pending.map(i=>`<div class="it" data-id="${i.id}"><div class="chk">✓</div><div class="tx">${esc(i.text)}</div></div>`).join("")
+          || '<div class="empty" style="padding:14px">Todo listo ✓</div>'}
+        ${L.done.length ? `<div class="donehdr">Comprado</div>` + L.done.map(i=>
+          `<div class="it done" data-id="${i.id}"><div class="chk">✓</div><div class="tx">${esc(i.text)}</div></div>`).join("") : ""}
+        <div class="addrow">
+          <input placeholder="Agregar…" data-add="${esc(L.slug)}">
+          <button data-addbtn="${esc(L.slug)}">+</button>
+        </div>
+      </div>`).join("");
+    bindLists();
+  } catch(e){ listsEl.innerHTML = '<div class="empty">No se pudo cargar. Tocá Actualizar.</div>'; }
+}
 
-navigator.serviceWorker?.getRegistration().then(async reg => {
-  if (reg) { const s = await reg.pushManager.getSubscription();
-    if (s) { setStatus("✓ Recibiendo notificaciones.", "ok"); btn.textContent = "Activado ✓"; } }
+function bindLists(){
+  listsEl.querySelectorAll(".it").forEach(el => el.addEventListener("click", async () => {
+    const slug = el.closest(".lst").dataset.slug, id = el.dataset.id;
+    const wasDone = el.classList.contains("done");
+    el.classList.toggle("done");
+    await api(wasDone ? "/lists/undone" : "/lists/done", {list: slug, ids: [id]});
+    loadLists();
+  }));
+  const addFrom = async (slug, input) => {
+    const t = input.value.trim(); if (!t) return;
+    input.value = "";
+    await api("/lists/add", {list: slug, items: t.split(/\s*,\s*/)});
+    loadLists();
+  };
+  listsEl.querySelectorAll("[data-addbtn]").forEach(b => b.addEventListener("click", () =>
+    addFrom(b.dataset.addbtn, listsEl.querySelector(`[data-add="${b.dataset.addbtn}"]`))));
+  listsEl.querySelectorAll("[data-add]").forEach(i => i.addEventListener("keydown", e => {
+    if (e.key === "Enter") addFrom(i.dataset.add, i); }));
+}
+
+document.getElementById("addlist").addEventListener("click", async () => {
+  const el = document.getElementById("newlist"), name = el.value.trim(); if (!name) return;
+  el.value = "";
+  await api("/lists/add", {list: name.toLowerCase().replace(/\s+/g,"-"), name, items: []});
+  loadLists();
 });
 
-// Al abrir la app, cargar el historial. Y refrescar cuando vuelve a primer plano.
-loadHistory();
-document.addEventListener("visibilitychange", () => { if (!document.hidden) loadHistory(); });
+/* ---- init ---- */
+function refresh(){ view === "notif" ? loadHistory() : loadLists(); }
+btn.addEventListener("click", registerAndSubscribe);
+document.getElementById("refresh").addEventListener("click", refresh);
+
+navigator.serviceWorker?.getRegistration().then(async reg => {
+  if (reg){ const s = await reg.pushManager.getSubscription();
+    if (s){ setStatus("✓ Recibiendo notificaciones.","ok"); btn.textContent="Activado ✓"; } }
+});
+refresh();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
 </script>
 </body>
 </html>
